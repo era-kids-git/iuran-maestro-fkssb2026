@@ -1,185 +1,100 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Laporan Iuran SSB MAESTRO FKSSB 2026</title>
+  <title>Iuran Maestro FKSSB 2026</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #000;
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;   /* semua konten ke tengah */
-      justify-content: flex-start;
-      min-height: 100vh;
-      padding: 20px;
-    }
-    form {
-      background: #111;
-      padding: 20px;
-      border-radius: 10px;
-      text-align: left;
-      border: 2px solid red;
-      width: 90%;
-      max-width: 400px;
-      margin: 10px auto;
-    }
-    label { display: block; margin-top: 10px; color: #fff; }
-    input, select, button {
-      width: 100%; padding: 8px; margin-top: 5px;
-      border-radius: 5px; border: none;
-    }
-    button { background: red; color: #fff; font-weight: bold; cursor: pointer; }
-    h2, h3 { margin-top: 20px; color: red; text-align: center; }
-    .logo {
-      display: block;
-      margin: 0 auto 15px auto;
-      width: 120px;
-    }
-    .belum-lunas { background-color: #ffcccc; }
-    .lunas { background-color: #ccffcc; }
-    .card {
-      border: 2px solid red; border-radius: 10px;
-      margin: 10px auto; padding: 10px; text-align: left;
-      width: 90%; max-width: 400px;
-    }
-    .action-btn {
-      background: #000; color: red; border: 1px solid red;
-      border-radius: 5px; padding: 5px; margin: 2px; cursor: pointer;
-    }
-    .tabs {
-      display: flex; justify-content: center; flex-wrap: wrap; margin: 10px 0;
-    }
-    .tabs button {
-      background: #111; color: #fff; border: 1px solid red;
-      padding: 5px 8px; margin: 3px; border-radius: 5px;
-      cursor: pointer; font-size: 12px; flex: none; width: 60px;
-    }
-    .export-btn {
-      background: red; color: #fff; border: 1px solid red;
-      border-radius: 5px; padding: 6px 10px; font-size: 12px;
-      margin: 8px auto; display: block; width: auto;
-    }
-    .rekap {
-      background: #111; border: 2px solid red; border-radius: 10px;
-      padding: 15px; color: #fff;
-      width: 90%; max-width: 400px; text-align: left;
-      margin: 10px auto;
-    }
-    .rekap p { margin: 8px 0; }
-
-    @media (max-width: 480px) {
-      form, .card, .rekap { width: 100%; max-width: none; font-size: 14px; }
-      .tabs button { width: 55px; font-size: 11px; padding: 4px 6px; }
-      .export-btn { font-size: 11px; padding: 5px 8px; }
-    }
+    body { font-family: Arial; background:#000; color:#fff; text-align:center; }
+    form, .card { margin:10px auto; width:90%; max-width:400px; }
+    .card { border:1px solid red; padding:10px; border-radius:8px; }
+    .lunas { background:#ccffcc; }
+    .belum { background:#ffcccc; }
+    button { margin:6px; padding:6px 12px; border:none; border-radius:5px; cursor:pointer; }
+    .export-btn { background:red; color:#fff; font-weight:bold; }
+    .rekap { margin-top:10px; font-weight:bold; }
   </style>
 </head>
 <body>
-  <!-- Logo Maestro -->
-  <img src="logo_maestro.png" alt="Logo SSB MAESTRO" class="logo">
-
-  <h2>Form Input Iuran - SSB MAESTRO</h2>
+  <h2>Form Input Iuran</h2>
   <form id="iuranForm">
-    <label>Nama Pemain:</label>
-    <input type="text" id="nama" required>
-    <label>Usia:</label>
-    <select id="usia"><option>9</option><option>10</option><option>12</option></select>
-    <label>Jumlah Iuran (Rp):</label>
-    <input type="number" id="iuran" required>
-    <label>Metode Pembayaran:</label>
-    <select id="metode"><option>Cash</option><option>Transfer</option></select>
-    <label>Catatan:</label>
-    <input type="text" id="catatan">
-    <label>Status:</label>
-    <select id="status"><option>Lunas</option><option>Belum Lunas</option></select>
+    <input id="nama" placeholder="Nama Pemain" required><br>
+    <select id="usia"><option>9</option><option>10</option><option>12</option></select><br>
+    <input id="iuran" type="number" placeholder="Jumlah Iuran" required><br>
+    <select id="status"><option>Lunas</option><option>Belum</option></select><br>
     <button type="submit">Simpan</button>
   </form>
 
-  <h3>Laporan Iuran SSB MAESTRO</h3>
-  <div class="tabs">
-    <button onclick="showData('all')">Semua</button>
-    <button onclick="showData('9')">Usia 9</button>
-    <button onclick="showData('10')">Usia 10</button>
-    <button onclick="showData('12')">Usia 12</button>
-  </div>
+  <h3>Data Iuran</h3>
+  <label for="filterUsia">Filter Usia:</label>
+  <select id="filterUsia" onchange="showData()">
+    <option value="all">Semua</option>
+    <option value="9">9</option>
+    <option value="10">10</option>
+    <option value="12">12</option>
+  </select>
   <div id="laporan"></div>
+  <div id="rekap" class="rekap"></div>
   <button class="export-btn" onclick="exportCSV()">Export ke CSV</button>
-
-  <h3>Rekap Per Usia</h3>
-  <div class="rekap">
-    <p><strong>Usia 9</strong><br>
-      Total Iuran: Rp <span id="total9">0</span><br>
-      Lunas: <span id="lunas9">0</span>
-    </p>
-    <p><strong>Usia 10</strong><br>
-      Total Iuran: Rp <span id="total10">0</span><br>
-      Lunas: <span id="lunas10">0</span>
-    </p>
-    <p><strong>Usia 12</strong><br>
-      Total Iuran: Rp <span id="total12">0</span><br>
-      Lunas: <span id="lunas12">0</span>
-    </p>
-  </div>
 
   <script>
     const form = document.getElementById("iuranForm");
 
-    window.onload = function() {
-      const data = JSON.parse(localStorage.getItem("iuranData")) || [];
-      showData("all");
-      updateRekap(data);
-    };
-
-    form.addEventListener("submit", function(e) {
+    form.addEventListener("submit", e => {
       e.preventDefault();
-      const entry = {
+      const data = JSON.parse(localStorage.getItem("iuranData")) || [];
+      data.push({
         nama: document.getElementById("nama").value,
         usia: document.getElementById("usia").value,
         iuran: parseInt(document.getElementById("iuran").value),
-        metode: document.getElementById("metode").value,
-        catatan: document.getElementById("catatan").value,
         status: document.getElementById("status").value
-      };
-      const data = JSON.parse(localStorage.getItem("iuranData")) || [];
-      data.push(entry);
+      });
       localStorage.setItem("iuranData", JSON.stringify(data));
-      showData("all");
-      updateRekap(data);
+      showData();
       form.reset();
     });
 
-    function showData(filter) {
+    function showData() {
       const data = JSON.parse(localStorage.getItem("iuranData")) || [];
-      const laporanDiv = document.getElementById("laporan");
-      laporanDiv.innerHTML = "";
-      data.forEach((d, i) => {
-        if (filter === "all" || d.usia === filter) {
-          const card = document.createElement("div");
-          card.className = "card " + (d.status === "Belum Lunas" ? "belum-lunas" : "lunas");
-          card.innerHTML = `
-            <strong>${d.nama}</strong> (Usia ${d.usia})<br>
-            Iuran: Rp ${d.iuran}<br>
-            Metode: ${d.metode}<br>
-            Catatan: ${d.catatan}<br>
-            Status: ${d.status}<br>
-            <button class="action-btn" onclick="editData(${i})">Edit</button>
-            <button class="action-btn" onclick="deleteData(${i})">Hapus</button>
-          `;
-          laporanDiv.appendChild(card);
+      const filter = document.getElementById("filterUsia").value;
+      const laporan = document.getElementById("laporan");
+      const rekap = document.getElementById("rekap");
+      laporan.innerHTML = "";
+      let total = 0;
+      let count = 0;
+
+      data.forEach(d => {
+        if(filter==="all" || d.usia===filter){
+          const div = document.createElement("div");
+          div.className = "card " + (d.status==="Lunas"?"lunas":"belum");
+          div.innerHTML = `${d.nama} (Usia ${d.usia}) - Rp ${d.iuran} - ${d.status}`;
+          laporan.appendChild(div);
+          total += d.iuran;
+          count++;
         }
       });
+
+      rekap.innerHTML = `Total Iuran (${filter==="all"?"Semua Usia":"Usia "+filter}): Rp ${total} dari ${count} pemain`;
     }
 
-    function updateRekap(data) {
-      let total9=0, lunas9=0;
-      let total10=0, lunas10=0;
-      let total12=0, lunas12=0;
-      data.forEach(d => {
-        if(d.usia==="9"){ total9+=d.iuran; if(d.status==="Lunas") lunas9++; }
-        if(d.usia==="10"){ total10+=d.iuran; if(d.status==="Lunas") lunas10++; }
-        if(d.usia==="12"){ total12+=d.iuran; if(d.status==="Lunas") lunas12++; }
+    function exportCSV() {
+      const data = JSON.parse(localStorage.getItem("iuranData")) || [];
+      const filter = document.getElementById("filterUsia").value;
+      let filtered = data.filter(d => filter==="all" || d.usia===filter);
+      if(filtered.length === 0) { alert("Tidak ada data untuk diexport"); return; }
+      let csv = "Nama,Usia,Iuran,Status\n";
+      filtered.forEach(d => {
+        csv += `${d.nama},${d.usia},${d.iuran},${d.status}\n`;
       });
-      document.getElementById("total9").innerText=total9;
-      document.get
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "laporan_iuran.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    window.onload = showData;
+  </script>
+</body>
+</html>
